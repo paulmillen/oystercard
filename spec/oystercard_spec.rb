@@ -53,9 +53,10 @@ describe Oystercard do
 
   describe '#touch_out' do
 
+    before(:each) { oystercard.top_up(Oystercard::FARE) }
+    before(:each) { oystercard.touch_in(station_in) }
+
     it 'ends a journey' do
-      oystercard.top_up(Oystercard::FARE)
-      oystercard.touch_in(station_in)
       oystercard.touch_out(station_out)
       expect(oystercard).not_to be_in_journey
     end
@@ -65,8 +66,6 @@ describe Oystercard do
     end
 
     it 'removes the entry_station' do
-      oystercard.top_up(Oystercard::FARE)
-      oystercard.touch_in(station_in)
       expect { oystercard.touch_out(station_out) }.to change { oystercard.entry_station }.to eq nil
     end
   end
@@ -76,9 +75,7 @@ describe Oystercard do
     it 'shows all previous journeys' do
       oystercard.touch_in(station_in)
       oystercard.touch_out(station_out)
-      oystercard.touch_in(station_in)
-      oystercard.touch_out(station_out)
-      expect(oystercard.journey_log).to eq 1 => [station_in,station_out], 2 => [station_in,station_out]
+      expect(oystercard.journey_log).to eq 1 => [station_in,station_out]
     end
   end
 
