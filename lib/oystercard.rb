@@ -1,6 +1,7 @@
 class Oystercard
 
   MAXIMUM_BALANCE = 90
+  FARE = 1
 
   attr_reader :balance, :travelling
 
@@ -13,20 +14,24 @@ class Oystercard
     @balance += amount
   end
 
-  def deduct(amount)
-    @balance -= 10
-  end
-
   def touch_in
+    fail 'Your balance is insufficent' if balance < FARE
     @travelling = true
   end
 
   def touch_out
+    deduct(FARE)
     @travelling = false
   end
 
   def in_journey?
     @travelling
+  end
+
+  private
+
+  def deduct(amount)
+    @balance -= amount
   end
 
 end

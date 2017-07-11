@@ -24,17 +24,15 @@ describe Oystercard do
     end
   end
 
-  describe '#deduct' do
-
-    it 'will deduct from the balance' do
-      expect { oystercard.deduct(10) }.to change { subject.balance }.by -10
-    end
-  end
-
   describe '#touch_in' do
 
     it 'starts a journey' do
+      oystercard.top_up(Oystercard::FARE)
       expect { oystercard.touch_in }.to change { oystercard.travelling }
+    end
+
+    it 'will fail if balance is less than fare' do
+      expect { oystercard.touch_in }.to raise_error 'Your balance is insufficent'
     end
   end
 
@@ -43,22 +41,24 @@ describe Oystercard do
     it 'ends a journey' do
       expect { oystercard.touch_out }.to change { oystercard.travelling }
     end
+
+    it 'deducts the fare' do
+      expect { subject.touch_out }.to change { subject.balance }.by Oystercard::FARE * -1
+    end
   end
 
   describe '#in_journey?' do
 
     it 'is true if touched in' do
+      oystercard.top_up(Oystercard::FARE)
       oystercard.touch_in
-      expect(oystercard.in_journey?).to eq true
+      expect(oystercard).to be_in_journey
     end
 
-    it 'is false if touched in' do
+    it 'is false if touched out' do
       oystercard.touch_out
-      expect(oystercard.in_journey?).to eq false
+      expect(oystercard).not_to be_in_journey
     end
   end
-
-
-
 
 end
