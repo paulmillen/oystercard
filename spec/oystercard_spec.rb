@@ -14,8 +14,7 @@ describe Oystercard do
   describe '#top_up' do
 
     it 'tops up the balance' do
-      oystercard.top_up(10)
-      expect(oystercard.balance).to eq 10
+      expect { oystercard.top_up(10) }.to change { subject.balance }.by 10
     end
 
     it 'will not make the balance greater than 90' do
@@ -26,10 +25,40 @@ describe Oystercard do
   end
 
   describe '#deduct' do
+
     it 'will deduct from the balance' do
-      oystercard.deduct(10)
-      expect(oystercard.balance).to eq -10
+      expect { oystercard.deduct(10) }.to change { subject.balance }.by -10
     end
   end
+
+  describe '#touch_in' do
+
+    it 'starts a journey' do
+      expect { oystercard.touch_in }.to change { oystercard.travelling }
+    end
+  end
+
+  describe '#touch_out' do
+
+    it 'ends a journey' do
+      expect { oystercard.touch_out }.to change { oystercard.travelling }
+    end
+  end
+
+  describe '#in_journey?' do
+
+    it 'is true if touched in' do
+      oystercard.touch_in
+      expect(oystercard.in_journey?).to eq true
+    end
+
+    it 'is false if touched in' do
+      oystercard.touch_out
+      expect(oystercard.in_journey?).to eq false
+    end
+  end
+
+
+
 
 end
