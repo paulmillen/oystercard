@@ -3,6 +3,8 @@ require 'oystercard'
 describe Oystercard do
 
   subject(:oystercard) { described_class.new }
+  before :each { allow(oystercard).to receive(:balance_low?) { false } }
+  let(:station) {:station}
 
   describe '#initialize' do
 
@@ -27,13 +29,19 @@ describe Oystercard do
   describe '#touch_in' do
 
     it 'starts a journey' do
-      oystercard.top_up(Oystercard::FARE)
-      oystercard.touch_in
+      oystercard.touch_in(station)
       expect(oystercard).to be_in_journey
     end
 
     it 'will fail if balance is less than fare' do
-      expect { oystercard.touch_in }.to raise_error 'Your balance is insufficent'
+      allow(oystercard).to receive(:balance_low?) { true }
+      expect { oystercard.touch_in(station) }.to raise_error 'Your balance is insufficent'
+    end
+
+    it 'remembers the entry station' do
+      oystercard.top_up(Oystercard::FARE)
+      oystercard.touch_in(station)
+      expect(oystercard.entry_station).to eq station
     end
   end
 
@@ -41,13 +49,19 @@ describe Oystercard do
 
     it 'ends a journey' do
       oystercard.top_up(Oystercard::FARE)
-      oystercard.touch_in
+      oystercard.touch_in(station)
       oystercard.touch_out
       expect(oystercard).not_to be_in_journey
     end
 
     it 'deducts the fare' do
       expect { oystercard.touch_out }.to change { oystercard.balance }.by Oystercard::FARE * -1
+    end
+
+    it 'removes the entry_station' do
+      oystercard.top_up(Oystercard::FARE)
+      oystercard.touch_in(station)
+      expect { oystercard.touch_out }.to change { oystercard.entry_station }.to eq nil
     end
   end
 
