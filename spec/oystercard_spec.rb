@@ -4,12 +4,18 @@ describe Oystercard do
 
   subject(:oystercard) { described_class.new }
   before :each { allow(oystercard).to receive(:balance_low?) { false } }
-  let(:station) {:station}
+  let(:station_in) {:station_in}
+  let(:station_out) {:station_out}
+
 
   describe '#initialize' do
 
     it 'will initialize with a balance of 0' do
       expect(oystercard.balance).to eq 0
+    end
+
+    it 'will start with an empty journey_log' do
+      expect(oystercard.journey_log).to be_empty
     end
   end
 
@@ -29,19 +35,19 @@ describe Oystercard do
   describe '#touch_in' do
 
     it 'starts a journey' do
-      oystercard.touch_in(station)
+      oystercard.touch_in(station_in)
       expect(oystercard).to be_in_journey
     end
 
     it 'will fail if balance is less than fare' do
       allow(oystercard).to receive(:balance_low?) { true }
-      expect { oystercard.touch_in(station) }.to raise_error 'Your balance is insufficent'
+      expect { oystercard.touch_in(station_in) }.to raise_error 'Your balance is insufficent'
     end
 
     it 'remembers the entry station' do
       oystercard.top_up(Oystercard::FARE)
-      oystercard.touch_in(station)
-      expect(oystercard.entry_station).to eq station
+      oystercard.touch_in(station_in)
+      expect(oystercard.entry_station).to eq station_in
     end
   end
 
@@ -49,19 +55,30 @@ describe Oystercard do
 
     it 'ends a journey' do
       oystercard.top_up(Oystercard::FARE)
-      oystercard.touch_in(station)
-      oystercard.touch_out
+      oystercard.touch_in(station_in)
+      oystercard.touch_out(station_out)
       expect(oystercard).not_to be_in_journey
     end
 
     it 'deducts the fare' do
-      expect { oystercard.touch_out }.to change { oystercard.balance }.by Oystercard::FARE * -1
+      expect { oystercard.touch_out(station_out) }.to change { oystercard.balance }.by Oystercard::FARE * -1
     end
 
     it 'removes the entry_station' do
       oystercard.top_up(Oystercard::FARE)
-      oystercard.touch_in(station)
-      expect { oystercard.touch_out }.to change { oystercard.entry_station }.to eq nil
+      oystercard.touch_in(station_in)
+      expect { oystercard.touch_out(station_out) }.to change { oystercard.entry_station }.to eq nil
+    end
+  end
+
+  describe '#current_journey' do
+
+    it 'shows all previous journeys' do
+      oystercard.touch_in(station_in)
+      oystercard.touch_out(station_out)
+      oystercard.touch_in(station_in)
+      oystercard.touch_out(station_out)
+      expect(oystercard.journey_log).to eq 1 => [station_in,station_out], 2 => [station_in,station_out]
     end
   end
 
