@@ -28,7 +28,8 @@ describe Oystercard do
 
     it 'starts a journey' do
       oystercard.top_up(Oystercard::FARE)
-      expect { oystercard.touch_in }.to change { oystercard.travelling }
+      oystercard.touch_in
+      expect(oystercard).to be_in_journey
     end
 
     it 'will fail if balance is less than fare' do
@@ -39,25 +40,14 @@ describe Oystercard do
   describe '#touch_out' do
 
     it 'ends a journey' do
-      expect { oystercard.touch_out }.to change { oystercard.travelling }
+      oystercard.top_up(Oystercard::FARE)
+      oystercard.touch_in
+      oystercard.touch_out
+      expect(oystercard).not_to be_in_journey
     end
 
     it 'deducts the fare' do
-      expect { subject.touch_out }.to change { subject.balance }.by Oystercard::FARE * -1
-    end
-  end
-
-  describe '#in_journey?' do
-
-    it 'is true if touched in' do
-      oystercard.top_up(Oystercard::FARE)
-      oystercard.touch_in
-      expect(oystercard).to be_in_journey
-    end
-
-    it 'is false if touched out' do
-      oystercard.touch_out
-      expect(oystercard).not_to be_in_journey
+      expect { oystercard.touch_out }.to change { oystercard.balance }.by Oystercard::FARE * -1
     end
   end
 
