@@ -18,24 +18,17 @@ class Oystercard
 
   def touch_in(station)
     fail 'Your balance is insufficent' if balance_low?
-    @entry_station = station
+    @journey_log[@counter] = [station]
   end
 
   def touch_out(station)
     deduct(FARE)
-    @exit_station = station
-    current_journey
+    @journey_log[@counter] << station
+    @counter += 1
   end
 
   def in_journey?
-    !!@entry_station
-  end
-
-  def current_journey
-    @journey_log[@counter] = [@entry_station, @exit_station]
-    @entry_station = nil
-    @exit_station = nil
-    @counter += 1
+    !!@journey_log[@counter]
   end
 
   private

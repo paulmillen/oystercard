@@ -43,12 +43,6 @@ describe Oystercard do
       allow(oystercard).to receive(:balance_low?) { true }
       expect { oystercard.touch_in(station_in) }.to raise_error 'Your balance is insufficent'
     end
-
-    it 'remembers the entry station' do
-      oystercard.top_up(Oystercard::FARE)
-      oystercard.touch_in(station_in)
-      expect(oystercard.entry_station).to eq station_in
-    end
   end
 
   describe '#touch_out' do
@@ -63,10 +57,6 @@ describe Oystercard do
 
     it 'deducts the fare' do
       expect { oystercard.touch_out(station_out) }.to change { oystercard.balance }.by Oystercard::FARE * -1
-    end
-
-    it 'removes the entry_station' do
-      expect { oystercard.touch_out(station_out) }.to change { oystercard.entry_station }.to eq nil
     end
   end
 
