@@ -1,9 +1,8 @@
 class Oystercard
 
   MAXIMUM_BALANCE = 90
-  FARE = 1
 
-  attr_reader :balance, :entry_station, :journey_log
+  attr_reader :balance, :journey_log
 
   def initialize
     @balance = 0
@@ -42,7 +41,7 @@ class Oystercard
   end
 
   def balance_low?
-    balance < FARE
+    balance < Journey::FARE
   end
 
 end
