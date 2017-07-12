@@ -8,7 +8,8 @@ class Oystercard
   def initialize
     @balance = 0
     @journey_log = {}
-    @counter = 1
+    @trip_counter = 1
+    @current_journey = Journey.new
   end
 
   def top_up(amount)
@@ -17,18 +18,21 @@ class Oystercard
   end
 
   def touch_in(station)
-    fail 'Your balance is insufficent' if balance_low?
-    @journey_log[@counter] = [station]
+      deduct(@current_journey.fare) unless @current_journey.fare == 1
+      fail 'Your balance is insufficent' if balance_low?
+      @current_journey = Journey.new(station)
   end
 
   def touch_out(station)
-    deduct(FARE)
-    @journey_log[@counter] << station
-    @counter += 1
+    @current_journey.finish(station)
+    deduct(@current_journey.fare)
+    @journey_log[@trip_counter] = [@current_journey.entry_station, @current_journey.exit_station]
+    @trip_counter += 1
+    @current_journey = Journey.new
   end
 
   def in_journey?
-    !!@journey_log[@counter]
+    !@current_journey.complete?
   end
 
   private

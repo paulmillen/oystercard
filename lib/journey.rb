@@ -10,7 +10,7 @@ class Journey
   end
 
   def complete?
-    !!@entry_station && !!@exit_station
+    (!!@entry_station && !!@exit_station) || (!@entry_station && !@exit_station)
   end
 
   def fare
