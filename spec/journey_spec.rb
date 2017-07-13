@@ -27,7 +27,7 @@ describe Journey do
     context 'given an exit station' do
 
       let(:exit_station) { double :exit_station }
-      before :each { subject.finish(exit_station) }
+      before :each { journey.finish(exit_station) }
 
       it 'calculates a fare' do
         expect(journey.fare).to eq Journey::FARE
@@ -37,8 +37,8 @@ describe Journey do
         expect(journey).to be_complete
       end
 
-      it 'returns itself when exiting a journey' do
-        expect(journey.finish(station)).to eq journey
+      it 'returns an exit_station' do
+        expect(journey.exit_station).to eq exit_station
       end
     end
   end

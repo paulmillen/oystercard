@@ -3,7 +3,6 @@ require 'oystercard'
 describe Oystercard do
 
   subject(:oystercard) { described_class.new }
-  before :each { allow(oystercard).to receive(:balance_low?) { false } }
   let(:fare) { 1 }
   let(:station_in) {:station_in}
   let(:station_out) {:station_out}
@@ -35,7 +34,6 @@ describe Oystercard do
   describe '#touch_in' do
 
       it 'will fail if balance is less than fare' do
-      allow(oystercard).to receive(:balance_low?) { true }
       expect { oystercard.touch_in(station_in) }.to raise_error 'Your balance is insufficent'
     end
   end
@@ -46,8 +44,8 @@ describe Oystercard do
       oystercard.top_up(fare)
       oystercard.touch_in(station_in)
       oystercard.touch_out(station_out)
-      expect(oystercard.journey_log).to eq 1 => [station_in, station_out]
+      expect(oystercard.journey_log).not_to be_empty
     end
   end
-  
+
 end

@@ -1,5 +1,7 @@
 class Oystercard
 
+  require_relative './journey'
+
   MAXIMUM_BALANCE = 90
 
   attr_reader :balance, :journey_log
@@ -25,7 +27,7 @@ class Oystercard
   def touch_out(station)
     @current_journey.finish(station)
     deduct(@current_journey.fare)
-    @journey_log[@trip_counter] = [@current_journey.entry_station, @current_journey.exit_station]
+    @journey_log[@trip_counter] = @current_journey
     @trip_counter += 1
     @current_journey = Journey.new
   end
